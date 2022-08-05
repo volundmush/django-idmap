@@ -2,8 +2,6 @@ import django
 from django.db import models
 from django.db.models.base import ModelBase
 
-from django.utils import six
-
 from .manager import IdMapManager
 from . import tls  # thread local storage
 
@@ -21,7 +19,7 @@ class IdMapModelBase(ModelBase):
         meta = attrs.get('Meta', type('Meta', (object,), {}))
 
         meta_values = {}
-        for attr, default in six.iteritems(META_VALUES):
+        for attr, default in META_VALUES.items():
             try:
                 meta_values[attr] = getattr(meta, attr)
                 delattr(meta, attr)
@@ -40,7 +38,7 @@ class IdMapModelBase(ModelBase):
 
         cls = super(IdMapModelBase, mcs).__new__(mcs, name, bases, attrs)
 
-        for attr in six.iterkeys(META_VALUES):
+        for attr in META_VALUES.keys():
             try:
                 # value defined in the class' own Meta
                 setattr(cls._meta, attr, meta_values[attr])
@@ -58,7 +56,7 @@ class IdMapModelBase(ModelBase):
         return cls
 
 
-class IdMapModel(six.with_metaclass(IdMapModelBase, models.Model)):
+class IdMapModel(models.Model, metaclass=IdMapModelBase):
     """
     Abstract class to derive any idmap-enabled model from
 
